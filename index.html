@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitPro - Seu Tracker de Academia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 glass-effect shadow-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-dumbbell text-2xl gradient-text"></i>
+                    <span class="gradient-text font-bold text-2xl">FitPro</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <button onclick="switchTab('dashboard')" class="tab-btn active-tab font-semibold flex items-center space-x-2 pb-4">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </button>
+                    <button onclick="switchTab('treino')" class="tab-btn font-semibold flex items-center space-x-2 pb-4 text-gray-600 hover:text-purple-600">
+                        <i class="fas fa-barbell"></i>
+                        <span>Treino</span>
+                    </button>
+                    <button onclick="switchTab('dieta')" class="tab-btn font-semibold flex items-center space-x-2 pb-4 text-gray-600 hover:text-purple-600">
+                        <i class="fas fa-apple-alt"></i>
+                        <span>Dieta</span>
+                    </button>
+                    <button onclick="switchTab('cardio')" class="tab-btn font-semibold flex items-center space-x-2 pb-4 text-gray-600 hover:text-purple-600">
+                        <i class="fas fa-running"></i>
+                        <span>Cardio</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Dashboard / Home -->
+        <div id="dashboard" class="tab-content active">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-4xl font-bold text-white mb-2">Bem-vindo! 💪</h1>
+                <p class="text-white opacity-80">Acompanhe seu progresso e alcance suas metas</p>
+            </div>
+
+            <!-- Period Filter -->
+            <div id="periodFilter" class="mb-8">
+                <!-- Period buttons will be inserted here -->
+            </div>
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="stat-card glass-effect rounded-xl p-6 text-white card-hover">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="opacity-80 text-sm">Total de Peso Levantado</p>
+                            <p class="text-3xl font-bold mt-2"><span id="totalWeight">0</span> kg</p>
+                        </div>
+                        <i class="fas fa-weight text-2xl opacity-60"></i>
+                    </div>
+                </div>
+                <div class="stat-card glass-effect rounded-xl p-6 text-white card-hover">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p id="exercisesLabel" class="opacity-80 text-sm">Exerc�cios Hoje</p>
+                            <p class="text-3xl font-bold mt-2"><span id="exercisesToday">0</span></p>
+                        </div>
+                        <i class="fas fa-list-check text-2xl opacity-60"></i>
+                    </div>
+                </div>
+                <div class="stat-card glass-effect rounded-xl p-6 text-white card-hover">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p id="caloriesLabel" class="opacity-80 text-sm">Calorias Ingeridas</p>
+                            <p class="text-3xl font-bold mt-2"><span id="totalCalories">0</span> kcal</p>
+                        </div>
+                        <i class="fas fa-fire text-2xl opacity-60"></i>
+                    </div>
+                </div>
+                <div class="stat-card glass-effect rounded-xl p-6 text-white card-hover">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p id="cardioLabel" class="opacity-80 text-sm">km de Cardio</p>
+                            <p class="text-3xl font-bold mt-2"><span id="totalCardioKm">0</span> km</p>
+                        </div>
+                        <i class="fas fa-route text-2xl opacity-60"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- Widgets Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- Workout Streak -->
+                <div id="streakWidget" class="glass-effect rounded-xl p-6 text-center card-hover">
+                    <div class="text-5xl mb-2">🔥</div>
+                    <p class="text-sm opacity-90 font-medium text-gray-700">Sequência de Treino</p>
+                    <p class="text-3xl font-bold mt-2 text-gray-800"><span id="streakDays">0</span> dias</p>
+                    <p class="text-xs opacity-70 text-gray-600 mt-1">Mantenha a consistência!</p>
+                </div>
+
+                <!-- Cardio This Week -->
+                <div class="glass-effect rounded-xl p-6 text-center card-hover bg-gradient-to-br from-green-50 to-blue-50">
+                    <div class="text-5xl mb-2">🏃</div>
+                    <p class="text-sm opacity-90 font-medium text-gray-700">Cardio Esta Semana</p>
+                    <p class="text-3xl font-bold mt-2 text-gray-800"><span id="weekCardio">0</span> km</p>
+                    <p class="text-xs opacity-70 text-gray-600 mt-1">Meta: 20 km</p>
+                </div>
+
+                <!-- Personal Records -->
+                <div class="glass-effect rounded-xl p-6 text-center card-hover bg-gradient-to-br from-purple-50 to-pink-50">
+                    <div class="text-5xl mb-2">🏆</div>
+                    <p class="text-sm opacity-90 font-medium text-gray-700">Recorde Pessoal</p>
+                    <p class="text-3xl font-bold mt-2 text-gray-800"><span id="prWeight">0</span> kg</p>
+                    <p class="text-xs opacity-70 text-gray-600 mt-1">Seu melhor levantamento</p>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Workout Progress Chart -->
+                <div class="glass-effect rounded-xl p-6 card-hover">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">📈 Progressão de Treino</h3>
+                    <canvas id="progressChart" height="18"></canvas>
+                </div>
+
+                <!-- Cardio Evolution Chart -->
+                <div class="glass-effect rounded-xl p-6 card-hover">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">🏃 Evolução Semanal de Cardio</h3>
+                    <canvas id="cardioChart" height="18"></canvas>
+                </div>
+            </div>
+
+            <!-- Meals Summary -->
+            <div class="glass-effect rounded-xl p-6 mb-8 card-hover">
+                <h3 id="mealsSummaryTitle" class="text-xl font-bold mb-6 text-gray-800">Resumo de Refei��es do Dia</h3>
+                <div id="mealsSummary" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Meals will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Progress Bars for Macros -->
+            <div class="glass-effect rounded-xl p-6 mb-8 card-hover" id="macroProgressBars">
+                <!-- Goal progress bars will be inserted here -->
+            </div>
+
+            <!-- Macros Summary -->
+            <div class="glass-effect rounded-xl p-6 card-hover">
+                <h3 id="macrosSummaryTitle" class="text-xl font-bold mb-6 text-gray-800">Resumo de Macros (Hoje)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-blue-600 rounded-lg p-4 text-white">
+                        <p class="text-sm opacity-90">Calorias</p>
+                        <p class="text-2xl font-bold"><span id="macro-calories">0</span> kcal</p>
+                    </div>
+                    <div class="bg-red-600 rounded-lg p-4 text-white">
+                        <p class="text-sm opacity-90">Proteína</p>
+                        <p class="text-2xl font-bold"><span id="macro-protein">0</span>g</p>
+                    </div>
+                    <div class="bg-green-600 rounded-lg p-4 text-white">
+                        <p class="text-sm opacity-90">Carboidratos</p>
+                        <p class="text-2xl font-bold"><span id="macro-carbs">0</span>g</p>
+                    </div>
+                    <div class="bg-yellow-600 rounded-lg p-4 text-white">
+                        <p class="text-sm opacity-90">Gorduras</p>
+                        <p class="text-2xl font-bold"><span id="macro-fats">0</span>g</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Treino Tab -->
+        <div id="treino" class="tab-content">
+            <h1 class="text-3xl font-bold text-white mb-8">🏋️ Gerenciamento de Treinos</h1>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Workout Routine Creation -->
+                <div class="glass-effect rounded-xl p-6 card-hover lg:col-span-1">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Criar Rotina</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Nome da Rotina</label>
+                            <input type="text" id="routineName" placeholder="Ex: Dia A - Peito" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Tipo de Divisão</label>
+                            <select id="routineType" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus text-sm">
+                                <option value="">Selecione...</option>
+                                <option value="AB">AB</option>
+                                <option value="ABC">ABC</option>
+                                <option value="ABCDEF">ABCDEF</option>
+                                <option value="PPL">PPL (Push/Pull/Legs)</option>
+                                <option value="Custom">Personalizada</option>
+                            </select>
+                        </div>
+                        <button onclick="createRoutine()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition">
+                            Criar Rotina
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Add Exercise to Routine -->
+                <div class="glass-effect rounded-xl p-6 card-hover lg:col-span-2">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Adicionar Exercício à Rotina</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Selecione uma Rotina</label>
+                            <select id="selectRoutine" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus text-sm">
+                                <option value="">Selecione uma rotina...</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Exercício</label>
+                                <input type="text" id="exerciseName" placeholder="Ex: Supino" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Séries</label>
+                                <input type="number" id="exerciseSets" placeholder="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Repetições</label>
+                                <input type="number" id="exerciseReps" placeholder="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus text-sm">
+                            </div>
+                        </div>
+                        <button onclick="addExerciseToRoutine()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg transition">
+                            Adicionar Exercício
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rotinas -->
+            <div class="glass-effect rounded-xl p-6 mt-6 card-hover">
+                <h3 class="text-xl font-bold mb-4 text-gray-800">📋 Suas Rotinas</h3>
+                <div id="routinesList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Routines will be listed here -->
+                </div>
+            </div>
+
+            <!-- Log Workout -->
+            <div class="glass-effect rounded-xl p-6 mt-6 card-hover">
+                <h3 class="text-xl font-bold mb-4 text-gray-800">🎯 Registrar Treino de Hoje</h3>
+                <div class="flex gap-4 items-end">
+                    <div class="flex-1">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Selecione uma Rotina para Treinar</label>
+                        <select id="selectRoutineForWorkout" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus text-sm">
+                            <option value="">Selecione uma rotina para treinar...</option>
+                        </select>
+                    </div>
+                    <button onclick="logWorkout()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition">
+                        Registrar Pesos
+                    </button>
+                </div>
+            </div>
+
+            <!-- Workout History -->
+            <div class="glass-effect rounded-xl p-6 mt-6 card-hover">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+                    <h3 id="workoutHistoryTitle" class="text-xl font-bold text-gray-800">Treinos da Semana</h3>
+                    <div class="flex gap-2">
+                        <button class="treino-period-btn px-3 py-1 rounded-lg font-semibold transition-all text-sm"
+                                data-period="today" onclick="changeTreinoPeriod('today', event)">
+                            Hoje
+                        </button>
+                        <button class="treino-period-btn active px-3 py-1 rounded-lg font-semibold transition-all text-sm"
+                                data-period="week" onclick="changeTreinoPeriod('week', event)">
+                            Semana
+                        </button>
+                        <button class="treino-period-btn px-3 py-1 rounded-lg font-semibold transition-all text-sm"
+                                data-period="month" onclick="changeTreinoPeriod('month', event)">
+                            M�s
+                        </button>
+                    </div>
+                </div>
+                <div id="workoutHistoryList">
+                    <!-- Workout history will be listed here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Dieta Tab -->
+        <div id="dieta" class="tab-content">
+            <h1 class="text-3xl font-bold text-white mb-8">🥗 Controle de Dieta</h1>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Add Food -->
+                <div class="glass-effect rounded-xl p-6 card-hover lg:col-span-1">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Adicionar Alimento</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Refeição</label>
+                            <select id="mealType" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus text-sm">
+                                <option value="Café da Manhã">Café da Manhã</option>
+                                <option value="Lanche 1">Lanche 1</option>
+                                <option value="Almoço">Almoço</option>
+                                <option value="Lanche 2">Lanche 2</option>
+                                <option value="Jantar">Jantar</option>
+                                <option value="Ceia">Ceia</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Alimento</label>
+                            <input type="text" id="foodName" placeholder="Ex: Frango com Arroz" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Calorias</label>
+                            <input type="number" id="foodCalories" placeholder="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Proteína (g)</label>
+                            <input type="number" id="foodProtein" placeholder="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Carboidratos (g)</label>
+                            <input type="number" id="foodCarbs" placeholder="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Gorduras (g)</label>
+                            <input type="number" id="foodFats" placeholder="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus text-sm">
+                        </div>
+                        <button onclick="addFood()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg transition">
+                            Adicionar Alimento
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Meals Summary -->
+                <div class="glass-effect rounded-xl p-6 card-hover lg:col-span-2">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+                        <h3 id="mealsListTitle" class="text-xl font-bold text-gray-800">Refei��es da Semana</h3>
+                        <div class="flex gap-2">
+                            <button class="dieta-period-btn px-3 py-1 rounded-lg font-semibold transition-all text-sm"
+                                    data-period="today" onclick="changeDietaPeriod('today', event)">
+                                Hoje
+                            </button>
+                            <button class="dieta-period-btn active px-3 py-1 rounded-lg font-semibold transition-all text-sm"
+                                    data-period="week" onclick="changeDietaPeriod('week', event)">
+                                Semana
+                            </button>
+                            <button class="dieta-period-btn px-3 py-1 rounded-lg font-semibold transition-all text-sm"
+                                    data-period="month" onclick="changeDietaPeriod('month', event)">
+                                M�s
+                            </button>
+                        </div>
+                    </div>
+                    <div id="mealsList" class="space-y-4">
+                        <!-- Meals will be listed here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Macros Chart -->
+            <div class="glass-effect rounded-xl p-6 mt-6 card-hover">
+                <h3 class="text-xl font-bold mb-4 text-gray-800">⚖️ Distribuição de Macros</h3>
+                <canvas id="macrosChart" height="18"></canvas>
+            </div>
+        </div>
+
+        <!-- Cardio Tab -->
+        <div id="cardio" class="tab-content">
+            <h1 class="text-3xl font-bold text-white mb-8">🏃 Controle de Cardio</h1>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Add Cardio Session -->
+                <div class="glass-effect rounded-xl p-6 card-hover lg:col-span-1">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Registrar Sessão</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Tipo</label>
+                            <select id="cardioType" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus text-sm">
+                                <option value="Corrida">Corrida</option>
+                                <option value="Caminhada">Caminhada</option>
+                                <option value="Bicicleta">Bicicleta</option>
+                                <option value="Natação">Natação</option>
+                                <option value="Elíptico">Elíptico</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Tempo (minutos)</label>
+                            <input type="number" id="cardioTime" placeholder="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Distância (km)</label>
+                            <input type="number" id="cardioDistance" placeholder="0" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus text-sm">
+                        </div>
+                        <button onclick="addCardioSession()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg transition">
+                            Registrar Sessão
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cardio Stats -->
+                <div class="space-y-6 lg:col-span-2">
+                    <div class="glass-effect rounded-xl p-6 card-hover">
+                        <h3 class="text-xl font-bold mb-4 text-gray-800">📊 Estatísticas do Cardio</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-blue-600 rounded-lg p-4 text-white">
+                                <p class="text-sm opacity-90">Tempo Total</p>
+                                <p class="text-2xl font-bold"><span id="totalCardioTime">0</span> min</p>
+                            </div>
+                            <div class="bg-green-600 rounded-lg p-4 text-white">
+                                <p class="text-sm opacity-90">Distância Total</p>
+                                <p class="text-2xl font-bold"><span id="totalCardioDistance">0</span> km</p>
+                            </div>
+                            <div class="bg-cyan-600 rounded-lg p-4 text-white">
+                                <p class="text-sm opacity-90">Pace Médio</p>
+                                <p class="text-2xl font-bold"><span id="avgPace">0:00</span> /km</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cardio History -->
+            <div class="glass-effect rounded-xl p-6 mt-6 card-hover">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+                    <h3 id="cardioHistoryTitle" class="text-xl font-bold text-gray-800">Hist�rico de Sess�es (Semana)</h3>
+                    <div class="flex gap-2">
+                        <button class="cardio-period-btn px-3 py-1 rounded-lg font-semibold transition-all text-sm"
+                                data-period="today" onclick="changeCardioPeriod('today', event)">
+                            Hoje
+                        </button>
+                        <button class="cardio-period-btn active px-3 py-1 rounded-lg font-semibold transition-all text-sm"
+                                data-period="week" onclick="changeCardioPeriod('week', event)">
+                            Semana
+                        </button>
+                        <button class="cardio-period-btn px-3 py-1 rounded-lg font-semibold transition-all text-sm"
+                                data-period="month" onclick="changeCardioPeriod('month', event)">
+                            M�s
+                        </button>
+                    </div>
+                </div>
+                <div id="cardioList" class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b-2 border-gray-300">
+                                <th class="text-left py-3 px-4 font-semibold text-gray-700">Data</th>
+                                <th class="text-left py-3 px-4 font-semibold text-gray-700">Tipo</th>
+                                <th class="text-left py-3 px-4 font-semibold text-gray-700">Tempo</th>
+                                <th class="text-left py-3 px-4 font-semibold text-gray-700">Distância</th>
+                                <th class="text-left py-3 px-4 font-semibold text-gray-700">Pace</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cardioTableBody">
+                            <!-- Cardio sessions will be listed here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Weight Chart -->
+            <div class="glass-effect rounded-xl p-6 mt-6 card-hover">
+                <h3 class="text-xl font-bold mb-4 text-gray-800">📈 Evolução Semanal</h3>
+                <canvas id="cardioWeekChart" height="20"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="src/config.js"></script>
+    <script src="src/services/api.js"></script>
+    <script src="src/services/storage.js"></script>
+    <script src="src/services/goals.js"></script>
+    <script src="src/services/notifications.js"></script>
+    <script src="src/ui/components.js"></script>
+    <script src="src/charts/charts.js"></script>
+    <script src="src/features/dashboard.js"></script>
+    
+    <!-- Route Scripts -->
+    <script src="src/routes/treino.js"></script>
+    <script src="src/routes/dieta.js"></script>
+    <script src="src/routes/cardio.js"></script>
+    
+    <!-- App Initialization -->
+    <script src="src/app.js"></script>
+</body>
+</html>
+
+
+
+
+
+
